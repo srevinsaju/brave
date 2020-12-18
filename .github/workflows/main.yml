@@ -49,7 +49,7 @@ jobs:
           
       - name: Install git
         run: |
-          sudo pacman -S base base-devel --noconfirm
+          sudo pacman -S base base-devel git --noconfirm
           git --version
 
       - uses: actions/checkout@v2
