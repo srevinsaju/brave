@@ -1,0 +1,82 @@
+#
+## MIT License
+#
+# Copyright (c) 2020 Srevin Saju
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+#-----------------------------
+
+
+name: Continuous
+on:
+  schedule:
+    - cron: "5 */12 * * *"
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: archlinux:latest
+    steps:
+      
+      - name: Set up User
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S sudo --noconfirm
+          sed -i 's,# %wheel ALL=(ALL) ALL,%wheel\tALL=(ALL)\tNOPASSWD:ALL,g' /etc/sudoers
+          useradd -m github
+          usermod -aG wheel github
+          su - github
+          
+      - name: Install git
+        run: |
+          sudo pacman -S base base-devel --noconfirm
+          git --version
+
+      - uses: actions/checkout@v2
+        
+      - name: Build scrcpy
+        run: |
+          makepkg -si         
+
+      - name: Upload Appimage
+        uses: actions/upload-artifact@v1.0.0
+        with:
+          name: brave-pkg
+          path: '*.pkg*'
+
+  Release:
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/download-artifact@v2
+    - name: Release
+      uses: marvinpinto/action-automatic-releases@latest
+      with:
+        automatic_release_tag: continuous
+        title: Brave Arch Linux Build
+        prerelease: true
+        files: |
+          '**/*.pkg*'
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+ 
