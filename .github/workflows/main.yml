@@ -49,6 +49,7 @@ jobs:
           
       - name: Install git
         run: |
+          su - github
           sudo pacman -S base base-devel git --noconfirm
           git --version
 
@@ -56,10 +57,11 @@ jobs:
         
       - name: Build scrcpy
         run: |
+          su - github
           makepkg -si         
 
       - name: Upload Appimage
-        uses: actions/upload-artifact@v1.0.0
+        uses: actions/upload-artifact@v1
         with:
           name: brave-pkg
           path: '*.pkg*'
