@@ -69,7 +69,7 @@ jobs:
           export COMPONENT=2
           makepkg --printsrcinfo | grep makedepends | sed 's,\tmakedepends = ,,g' | while read line ; do
             echo "==> Fetching $line"
-            yay -S --noconfirm --asdeps "$line"
+            sudo -u github yay -S --noconfirm --asdeps "$line"
           done
           
           chown github:github -R /__w/brave/brave 
