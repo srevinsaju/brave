@@ -57,6 +57,7 @@ jobs:
         
       - name: Build scrcpy
         run: |
+          chown github:github -R /__w/brave/brave 
           sudo -u github makepkg -s --noconfirm
 
       - name: Upload Appimage
