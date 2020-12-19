@@ -53,10 +53,25 @@ jobs:
           sudo pacman -S base base-devel git --noconfirm
           git --version
 
+      - name: Install yay
+        run: |
+          git clone https://aur.archlinux.org/yay.git /tmp/yay
+          chown -R github:github /tmp/yay
+          cd /tmp/yay
+          sudo -u github makepkg -si --noconfirm
+
+
       - uses: actions/checkout@v2
         
-      - name: Build scrcpy
+      - name: Build Brave
         run: |
+          # install deps
+          export COMPONENT=2
+          makepkg --printsrcinfo | grep makedepends | sed 's,\tmakedepends = ,,g' | while read line ; do
+            echo "==> Fetching $line"
+            yay -S --noconfirm --asdeps "$line"
+          done
+          
           chown github:github -R /__w/brave/brave 
           sudo -u github makepkg -s --noconfirm
 
