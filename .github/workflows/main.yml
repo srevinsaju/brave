@@ -57,7 +57,7 @@ jobs:
         
       - name: Build scrcpy
         run: |
-          sudo -u nobody makepkg      
+          sudo -u github makepkg -s --noconfirm
 
       - name: Upload Appimage
         uses: actions/upload-artifact@v1
