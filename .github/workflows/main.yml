@@ -66,13 +66,12 @@ jobs:
       - name: Build Brave
         run: |
           # install deps
+          chown github:github -R /__w/brave/brave 
           export COMPONENT=2
           sudo -u github makepkg --printsrcinfo | grep makedepends | sed 's,\tmakedepends = ,,g' | while read line ; do
             echo "==> Fetching $line"
             sudo -u github yay -S --noconfirm --asdeps "$line"
           done
-          
-          chown github:github -R /__w/brave/brave 
           sudo -u github makepkg -s --noconfirm
 
       - name: Upload Appimage
