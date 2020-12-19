@@ -67,7 +67,7 @@ jobs:
         run: |
           # install deps
           export COMPONENT=2
-          makepkg --printsrcinfo | grep makedepends | sed 's,\tmakedepends = ,,g' | while read line ; do
+          sudo -u github makepkg --printsrcinfo | grep makedepends | sed 's,\tmakedepends = ,,g' | while read line ; do
             echo "==> Fetching $line"
             sudo -u github yay -S --noconfirm --asdeps "$line"
           done
